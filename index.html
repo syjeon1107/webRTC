@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html lang="ko">
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <meta name="description" content="RemoteMonster live media service demo" />
+    <meta name="author" content="Lucas Choi" />
+
+    <title>send Message for Cast</title>
+
+    <!-- Custom fonts for this template-->
+    <link
+      href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body id="page-top">
+    <!-- Page Wrapper -->
+    <div id="wrapper">
+      <!-- Sidebar -->
+      <ul
+        class="navbar-nav bg-gradient-primary sidebar sidebar-dark accordion"
+        id="accordionSidebar"
+      ></ul>
+      <!-- End of Sidebar -->
+
+      <!-- Content Wrapper -->
+      <div id="content-wrapper" class="d-flex flex-column">
+        <!-- Main Content -->
+        <div id="content">
+          <div class="container-fluid">
+            <!-- Content Row -->
+            <div class="row">
+              <div class="col-xl-12 col-md-12 mb-12">
+                <div class="card shadow mb-12">
+                  <div class="card-group">
+                    <div class="card">
+                      <div id="chatLogDiv" class="card-body" style="margin: -0.5rem" ></div>
+                      <div
+                        class="col-xl-12 col-md-12 mb-12"
+                        style="padding: 1rem"
+                      >
+                        <div class="mt-4 text-center">
+                          <span class="mr-2">
+                            <input
+                              id="channelNameInput"
+                              class="text-center"
+                              type="text"
+                              placeholder="channel name"
+                              autofocus
+                            />
+                          </span>
+                          <span class="mr-2">
+                            <input
+                              id="nameInput"
+                              class="form-control-user text-center"
+                              type="text"
+                              placeholder="write your name"
+                            />
+                          </span>
+                          <span class="mr-2">
+                            <input
+                              id="chatMsg"
+                              class="form-control-user text-center"
+                              type="text"
+                              placeholder="chat message"
+                            />
+                          </span>
+                          <span class="mr-2">
+                            <a
+                              id="sendMessageBtn"
+                              onclick="sendMessage()"
+                              class="btn btn-primary btn-user text-center"
+                            >
+                              Send Message</a
+                            >
+                          </span>
+                        </div>
+                        <br />
+                        <a
+                          id="channelBtn"
+                          href="#"
+                          class="btn btn-primary btn-user btn-block text-center"
+                          >CONNECT</a
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- /.container-fluid -->
+
+          <link
+            rel="stylesheet"
+            href="https://maxcdn.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css"
+          />
+          <!-- The webrtc adapter is required for browser compatibility -->
+          <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+          <script src="https://cdn.jsdelivr.net/npm/@remotemonster/sdk"></script>
+
+          <script>
+            const channelButton = document.querySelector("#channelBtn");
+            const sendMessageBtn = document.getElementById("sendMessageBtn");
+            const chatLogDiv = document.getElementById("chatLogDiv");
+            const chatMsg = document.getElementById("chatMsg");
+            const channelNameInput = document.getElementById("channelNameInput");
+
+            let isConnected = false;
+            let isCaster = false;
+            let name = "Person";
+            let myChannelId;
+            let isHost = "false";
+            let userId = "";
+            let remon;
+            let dummyRemon;
+            const key = "0d35523d62803d0e1e84b22c78dccdfd06a414f7b7387256f8f6a2b08e11f3f2";
+            const serviceId = "c79c8950-762e-49fd-8dba-0aa3cc390021";
+            var waitingLoop;
+            createDummyRemonForSearchLoop();
+            //startSearchLoop();
+            let msgObj = {
+              callFunc: "",
+              data: "",
+			  chId: "",
+            };
+            // please register your own service key from remotemonster site.
+            let config = {
+              credential: {
+                key: key,
+                serviceId: serviceId,
+              },
+              view: {
+                remote: "#remoteVideo",
+                local: "#myVideo",
+              },
+              media: {
+                video: false,
+                audio: false,
+              },
+            };
+
+            const listener = {
+              onConnect(chid) {
+                console.log(`EVENT FIRED: onConnect: ${chid}`);
+				//alert("connect!! "+chid);
+                //msgObj.callFunc = "penConnectToWebView";
+                //msgObj.data = error;
+                //ReactNativeWebView.postMessage(JSON.stringify(msgObj));
+				alert(chid);
+              },
+              onComplete() {
+                console.log("EVENT FIRED: onComplete");
+                remon.sendMessage(
+                  userId + "-" + isHost + "-" + "msg" + "-open"
+                ); //최초 연결 알림
+              },
+              onDisconnectChannel() {
+                // is called when other peer hang up.
+                remon.close();
+                isConnected = false;
+              },
+              onClose() {
+                // is called when remon.close() method is called.
+                console.log("EVENT FIRED: onClose");
+
+                //remon.sendMessage(
+                //  userId + "-" + isHost + "-" + "msg" + "-close"
+                //);
+
+				if(isHost == "true")
+					sendMessageToApp("penDisConnectToWebView", userId + "-" + isHost + "-" + "msg" + "-close");
+
+
+                remon.close();
+                isConnected = false;
+              },
+              onError(error) {
+                console.log(`EVENT FIRED: onError: ${error}`);
+                msgObj.callFunc = "onWebviewError";
+                msgObj.data = error;
+				msgObj.chId = myChannelId;
+                ReactNativeWebView.postMessage(JSON.stringify(msgObj));
+              },
+              onStat(result) {
+                console.log(`EVENT FIRED: onStat: ${result}`);
+              },
+              onMessage(msg) {
+                addMesssage(false, msg);
+
+                var isHostVal = msg.split("-")[1];
+                if (isHost == "true") { //방생성자(강사)인 경우 
+					if (msg.split("-")[3] == "stroke")//강사면 모든 학생 데이터 전달
+						sendMessageToApp("penDataReceiveToWeview", msg);
+                  	else if (msg.split("-")[3] == "close")
+						sendMessageToApp("penDisConnectToWebView", msg);
+					else if (msg.split("-")[3] == "open")
+						sendMessageToApp("penConnectToWebView", msg);
+					else if (msg.split("-")[3] == "status") {//강사가 받아서 앱으로 전달
+						sendMessageToApp("setStatusFromWebView", msg);
+					}
+                } 
+				else { //현재 학생인 경우
+					if (isHostVal == "true") { //보낸 사람이 방생성자(강사)인 경우
+						if (msg.split("-")[3] == "stroke")
+							sendMessageToApp("penDataReceiveToWeview", msg);
+						else if (msg.split("-")[3] == "open")
+							sendMessageToApp("penConnectToWebView", msg);
+						else if (msg.split("-")[3] == userId) {//학생이 강사가 받도록 재발송
+							//sendMessageToApp("penConnectToWebView", msg);
+							remon.sendMessage(userId + "-false-onStatus-status");
+						}
+					}	
+				}
+				
+				
+				
+              },
+            };
+
+            function start(isViewer) {
+			  if (isConnected) {
+                isConnected = false;
+
+                remon.close();
+                myChannelId = "";
+              } else {
+                isConnected = true;
+
+                remon = new Remon({ config, listener });
+                isHost = getParameterByName("isHost");
+                userId = getParameterByName("userId");
+                myChannelId = getParameterByName("chId");
+                //myChannelId = myChannelId.replace(":", "-");
+
+                channelNameInput.value = myChannelId;
+
+                console.log("myChannelId === " + myChannelId);
+                console.log("isHost === " + isHost);
+				//let fetchStatus = remon.fetchCalls(myChannelId);
+				//console.log("fetchCalls == ", fetchStatus);
+
+				//alert(isHost + " == " + myChannelId);
+
+                if (isHost == "false") {
+                  //remon.joinCast(myChannelId);
+				  remon.connectCall(myChannelId);
+				  //remon.connectChannel(myChannelId);
+                } else {
+                  //remon.createCast(myChannelId);
+				  remon.connectCall(myChannelId);
+				  //remon.connectChannel(myChannelId);
+                }
+
+                //isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
+              }
+            }
+
+			async function connectionChk()
+			{
+				console.log("채널아이디:::", myChannelId);
+				let searchResult= await remon.fetchRooms(myChannelId);
+				console.log("채널정보 :: ", searchResult);
+			}
+
+            channelButton.addEventListener(
+              "click",
+              (evt) => {
+                start(false);
+                evt.preventDefault();
+              },
+              false
+            );
+
+            function createDummyRemonForSearchLoop() {
+              if (dummyRemon) dummyRemon.close();
+              let cfg = {
+                credential: { key: key, serviceId: serviceId },
+                view: { local: "#localVideo1", remote: "#remoteVideo1" },
+                media: { audio: false, video: false },
+              };
+              cfg.credential.wsurl = "wss://signal.remotemonster.com/ws";
+              cfg.credential.resturl = "https://signal.remotemonster.com/rest";
+              dummyRemon = new Remon({ config: cfg });
+            }
+
+            function addMesssage(isMine, msg) {
+              var msgItem = document.createElement("p");
+              msgItem.style.textShadow = "0 0 7px #ffffff";
+              msgItem.style.lineHeight = 0.9;
+              if (!isMine) msgItem.style.color = "Blue";
+
+              msgItem.innerHTML = isMine
+                ? "Me : " + msg
+                : msg.split("-")[0] +
+                  " : " +
+                  msg.split("-")[1] +
+                  " " +
+                  msg.split("-")[2];
+              chatLogDiv.appendChild(msgItem);
+            }
+
+            function sendMessageToApp(funcNm, data) {
+				try {
+					msgObj.callFunc = funcNm;
+					msgObj.data = data;
+					msgObj.chId = myChannelId;
+					ReactNativeWebView.postMessage(JSON.stringify(msgObj));
+				}
+				catch(e) 
+				{
+					console.log(e);
+				}
+            }
+
+            function sendMessage(msg) {
+				if (!msg) msg = "pen data !!";
+				var name = userId;
+				remon.sendMessage(name + "-" + isHost + "-" + msg + "-stroke");
+				addMesssage(true, name + "-" + isHost + "-" + msg);
+            }
+
+            function getParameterByName(name) {
+              name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+              var regex = new RegExp("[\\?&]" + name + "=([^&#]*)"),
+                results = regex.exec(location.search);
+              return results === null ? "" : decodeURIComponent(results[1].replace(/\+/g, " "));
+            }
+
+            window.onload = function () {
+              //ReactNativeWebView.postMessage("hellow");
+              start();
+              //});
+
+			window.document.addEventListener("message", function (e) {
+                var receiveObj = JSON.parse(e.data);
+                if (receiveObj.callFunc == "PenData") {
+                  
+                  	sendMessage(receiveObj.data);
+                } 
+				else if (receiveObj.callFunc == "MasterConnection") {
+                  	remon.sendMessage(receiveObj.data);
+                } 
+				else if (receiveObj.callFunc == "OnStaus") {
+                  	remon.sendMessage(receiveObj.data);
+				} 
+				else {
+					start();
+					msgObj.callFunc = "callBackToWebview";
+					msgObj.data = "";
+					msgObj.chId = myChannelId;
+					ReactNativeWebView.postMessage(JSON.stringify(msgObj));
+                }
+              });
+            };
+          </script>
+        </div>
+        <!-- End of Main Content -->
+      </div>
+      <!-- End of Content Wrapper -->
+    </div>
+    <!-- End of Page Wrapper -->
+  </body>
+</html>
