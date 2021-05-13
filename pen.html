@@ -164,7 +164,7 @@
                 //msgObj.callFunc = "penConnectToWebView";
                 //msgObj.data = error;
                 //ReactNativeWebView.postMessage(JSON.stringify(msgObj));
-				//alert(chid);
+				alert(chid);
               },
               onComplete() {
                 console.log("EVENT FIRED: onComplete");
@@ -216,8 +216,10 @@
 					else if (msg.split("-")[3] == "status") {//강사가 받아서 앱으로 전달
 						sendMessageToApp("setStatusFromWebView", msg);
 					}
+					alert("teacher");
                 } 
 				else { //현재 학생인 경우
+                  alert("student");
 					if (isHostVal == "true") { //보낸 사람이 방생성자(강사)인 경우
 						if (msg.split("-")[3] == "stroke")
 							sendMessageToApp("penDataReceiveToWeview", msg);
@@ -298,7 +300,7 @@
               let cfg = {
                 credential: { key: key, serviceId: serviceId },
                 view: { local: "#localVideo1", remote: "#remoteVideo1" },
-                media: { audio: false, video: false },
+                media: { audio: true, video: true },
               };
               cfg.credential.wsurl = "wss://signal.remotemonster.com/ws";
               cfg.credential.resturl = "https://signal.remotemonster.com/rest";
