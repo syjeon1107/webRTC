@@ -241,6 +241,7 @@
 
             function start(isViewer) {
               alert("isViewer4 :: >> "+isViewer);
+              isHost = getParameterByName("isHost");
               isConnected = isHost == 'true' ? false : true;
 			  if (isConnected) {
                 isConnected = false;
@@ -256,7 +257,7 @@
                 alert("isCast2 :: >" +isCaster);
                 alert("isConnected2 :: > " + isConnected)
                 remon = new Remon({ config, listener });
-                isHost = getParameterByName("isHost");
+                // isHost = getParameterByName("isHost");
                 userId = getParameterByName("userId");
                 myChannelId = getParameterByName("chId");
                 //myChannelId = myChannelId.replace(":", "-");
