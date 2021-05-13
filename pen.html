@@ -240,7 +240,7 @@
             };
 
             function start(isViewer) {
-              alert("isViewer7 :: >> "+isViewer);
+              alert("isViewer8:: >> "+isViewer);
 			  if (isConnected) {
                 isConnected = false;
                 isCaster = false;
@@ -269,6 +269,8 @@
 
 				//alert(isHost + " == " + myChannelId);
 
+                remon.connectCall(myChannelId);
+
                 if (isHost == "false") {
                   remon.joinCast(myChannelId);
 				  // remon.connectCall(myChannelId);
@@ -278,6 +280,7 @@
 				  // remon.connectCall(myChannelId);
 				  //remon.connectChannel(myChannelId);
                 }
+
 
                 // isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
               }
