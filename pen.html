@@ -241,17 +241,19 @@
 
             function start(isViewer) {
               alert("isViewer :: >> "+isViewer);
+              alert("isCast :: >" +isCaster);
+              alert("isConnected :: > " + isConnected);
 			  if (isConnected) {
                 isConnected = false;
-                // isCaster = false;
+                isCaster = false;
                 remon.close();
                 myChannelId = "";
               } else {
                 isConnected = true;
-                // isCaster = !isViewer;
-                // if (!isCaster) {
+                isCaster = !isViewer;
+                if (!isCaster) {
                   config.view.remote = '#myVideo';
-                // }
+                }
                 remon = new Remon({ config, listener });
                 isHost = getParameterByName("isHost");
                 userId = getParameterByName("userId");
@@ -268,16 +270,16 @@
 				//alert(isHost + " == " + myChannelId);
 
                 if (isHost == "false") {
-                  // remon.joinCast(myChannelId);
-				  remon.connectCall(myChannelId);
+                  //remon.joinCast(myChannelId);
+				  // remon.connectCall(myChannelId);
 				  //remon.connectChannel(myChannelId);
                 } else {
-                  // remon.createCast(myChannelId);
-				  remon.connectCall(myChannelId);
+                  //remon.createCast(myChannelId);
+				  // remon.connectCall(myChannelId);
 				  //remon.connectChannel(myChannelId);
                 }
 
-                // isHost ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
+                isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
               }
             }
 
