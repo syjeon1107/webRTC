@@ -269,15 +269,15 @@
 
                 if (isHost == "false") {
                   //remon.joinCast(myChannelId);
-				  remon.connectCall(myChannelId);
+				  // remon.connectCall(myChannelId);
 				  //remon.connectChannel(myChannelId);
                 } else {
                   //remon.createCast(myChannelId);
-				  remon.connectCall(myChannelId);
+				  // remon.connectCall(myChannelId);
 				  //remon.connectChannel(myChannelId);
                 }
 
-                // isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
+                isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
               }
             }
 
