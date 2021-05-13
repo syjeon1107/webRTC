@@ -46,12 +46,12 @@
                         style="padding: 1rem"
                       >
 			       <div style="position: relative;">
-                                            <video id="myVideo" class="remote-video center w-300 h-300" autoplay muted controls playsinline
-                                                   style="z-index:1;background: rgba(0, 0, 0, 0.5); width: 100%;"></video>
-                                            <h6 id="waitingTv" class="m-0 font-weight-bold text-primary"
-                                                style="z-index:3; position: absolute;bottom: 55px;right:45px; visibility: hidden;">
-                                                waiting</h6>
-                                        </div>
+                            <video id="myVideo" class="remote-video center w-300 h-300" autoplay muted controls playsinline
+                                   style="z-index:1;background: rgba(0, 0, 0, 0.5); width: 100%;"></video>
+                            <h6 id="waitingTv" class="m-0 font-weight-bold text-primary"
+                                style="z-index:3; position: absolute;bottom: 55px;right:45px; visibility: hidden;">
+                                waiting</h6>
+                        </div>
                         <div class="mt-4 text-center">
                           <span class="mr-2">
                             <input
@@ -148,8 +148,12 @@
                 local: "#myVideo",
               },
               media: {
-                video: false,
-                audio: false,
+                video: {
+                  codex:'vp8',
+                  maxBandwidth: 1800,
+                  frameRate: {max: 25, min: 25}
+                },
+                audio: true,
               },
             };
 
