@@ -240,7 +240,8 @@
             };
 
             function start(isViewer) {
-              alert("isViewer8:: >> "+isViewer);
+              alert("isViewer9:: >> "+isViewer);
+              isHost = getParameterByName("isHost");
 			  if (isConnected) {
                 isConnected = false;
                 isCaster = false;
@@ -249,13 +250,13 @@
               } else {
                 isConnected = true;
                 isCaster = !isViewer;
-                if (!isCaster) {
+                if (isHost == 'false') {
                   config.view.remote = '#myVideo';
                 }
                 alert("isCast2 :: >" +isCaster);
                 alert("isConnected2 :: > " + isConnected)
                 remon = new Remon({ config, listener });
-                isHost = getParameterByName("isHost");
+                // isHost = getParameterByName("isHost");
                 userId = getParameterByName("userId");
                 myChannelId = getParameterByName("chId");
                 //myChannelId = myChannelId.replace(":", "-");
