@@ -238,12 +238,16 @@
             function start(isViewer) {
 			  if (isConnected) {
                 isConnected = false;
+                isCaster = false;
 
                 remon.close();
                 myChannelId = "";
               } else {
                 isConnected = true;
-
+                isCaster = !isViewer;
+                if (!isCaster) {
+                  config.view.remote = '#myVideo';
+                }
                 remon = new Remon({ config, listener });
                 isHost = getParameterByName("isHost");
                 userId = getParameterByName("userId");
@@ -269,7 +273,7 @@
 				  //remon.connectChannel(myChannelId);
                 }
 
-                //isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
+                isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
               }
             }
 
