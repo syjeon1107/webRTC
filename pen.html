@@ -168,7 +168,7 @@
               },
               onComplete() {
                 console.log("EVENT FIRED: onComplete");
-                alert(isHost);
+
                 remon.sendMessage(
                   userId + "-" + isHost + "-" + "msg" + "-open"
                 ); //최초 연결 알림
@@ -207,7 +207,7 @@
                 addMesssage(false, msg);
 
                 var isHostVal = msg.split("-")[1];
-                alert("line 210: "+isHosts)
+                alert("line 210: "+isHost);
                 if (isHost == "true") { //방생성자(강사)인 경우 
 					if (msg.split("-")[3] == "stroke")//강사면 모든 학생 데이터 전달
 						sendMessageToApp("penDataReceiveToWeview", msg);
@@ -267,17 +267,17 @@
 
 				//alert(isHost + " == " + myChannelId);
 
-                // if (isHost == "false") {
-                //   //remon.joinCast(myChannelId);
-				//   remon.connectCall(myChannelId);
-				//   //remon.connectChannel(myChannelId);
-                // } else {
-                //   //remon.createCast(myChannelId);
-				//   remon.connectCall(myChannelId);
-				//   //remon.connectChannel(myChannelId);
-                // }
+                if (isHost == "false") {
+                  //remon.joinCast(myChannelId);
+				  remon.connectCall(myChannelId);
+				  //remon.connectChannel(myChannelId);
+                } else {
+                  //remon.createCast(myChannelId);
+				  remon.connectCall(myChannelId);
+				  //remon.connectChannel(myChannelId);
+                }
 
-                isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
+                // isCaster ? remon.createCast(myChannelId) : remon.joinCast(myChannelId);
               }
             }
 
