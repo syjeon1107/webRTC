@@ -164,7 +164,7 @@
                 //msgObj.callFunc = "penConnectToWebView";
                 //msgObj.data = error;
                 //ReactNativeWebView.postMessage(JSON.stringify(msgObj));
-				alert(chid);
+				// alert(chid);
               },
               onComplete() {
                 console.log("EVENT FIRED: onComplete");
@@ -207,7 +207,7 @@
                 addMesssage(false, msg);
 
                 var isHostVal = msg.split("-")[1];
-                alert("line 210: "+isHost);
+                // alert("line 210: "+isHost);
                 if (isHost == "true") { //방생성자(강사)인 경우 
 					if (msg.split("-")[3] == "stroke")//강사면 모든 학생 데이터 전달
 						sendMessageToApp("penDataReceiveToWeview", msg);
@@ -218,10 +218,10 @@
 					else if (msg.split("-")[3] == "status") {//강사가 받아서 앱으로 전달
 						sendMessageToApp("setStatusFromWebView", msg);
 					}
-					alert("teacher");
+					// alert("teacher");
                 } 
 				else { //현재 학생인 경우
-                  alert("student");
+                  // alert("student");
 					if (isHostVal == "true") { //보낸 사람이 방생성자(강사)인 경우
 						if (msg.split("-")[3] == "stroke")
 							sendMessageToApp("penDataReceiveToWeview", msg);
@@ -240,7 +240,7 @@
             };
 
             function start(isViewer) {
-              alert("isViewer9:: >> "+isViewer);
+              // alert("isViewer9:: >> "+isViewer);
               isHost = getParameterByName("isHost");
 			  if (isConnected) {
                 isConnected = false;
@@ -253,8 +253,8 @@
                 if (isHost == 'false') {
                   config.view.remote = '#myVideo';
                 }
-                alert("isCast2 :: >" +isCaster);
-                alert("isConnected2 :: > " + isConnected)
+                // alert("isCast2 :: >" +isCaster);
+                // alert("isConnected2 :: > " + isConnected)
                 remon = new Remon({ config, listener });
                 // isHost = getParameterByName("isHost");
                 userId = getParameterByName("userId");
